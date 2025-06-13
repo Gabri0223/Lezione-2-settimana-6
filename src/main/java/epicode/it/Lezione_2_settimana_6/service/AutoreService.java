@@ -2,6 +2,8 @@ package epicode.it.Lezione_2_settimana_6.service;
 
 import epicode.it.Lezione_2_settimana_6.exception.NotFoundException;
 import epicode.it.Lezione_2_settimana_6.model.AutorePost;
+import epicode.it.Lezione_2_settimana_6.repository.AutoreRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,22 +12,20 @@ import java.util.Random;
 
 @Service
 public class AutoreService {
-
-    private List<AutorePost> autori=new ArrayList();
+    @Autowired
+    private AutoreRepository autoreRepository;
 
     public AutorePost saveAutore(AutorePost autore){
-        autore.setId(new Random().nextInt(1,20000));
         autore.setAvatar("https://ui-avatars.com/api/?name=Mario+Rossi");
-        autori.add(autore);
-        return autore;
+        return autoreRepository.save(autore);
     }
 
     public AutorePost getAutore(int id)throws NotFoundException {
-        return autori.stream().filter(autorePost -> autorePost.getId()==id).findFirst().orElseThrow(()->new NotFoundException("autore post non trovato"));
+        return autoreRepository.findById(id).orElseThrow(()->new NotFoundException("autore non trovato"));
     }
 
     public List<AutorePost> getAllAutori(){
-        return autori;
+        return autoreRepository.findAll();
     }
 
     public AutorePost modificaAutore(int id,AutorePost autore)throws NotFoundException{
@@ -36,13 +36,13 @@ public class AutoreService {
         autoreDaModificare.setEmail(autore.getEmail());
         autoreDaModificare.setCognome(autore.getCognome());
         autoreDaModificare.setDataDiNascita(autore.getDataDiNascita());
-        return autoreDaModificare;
+        return autoreRepository.save(autoreDaModificare);
     }
 
     public void deleteAutore(int id)throws NotFoundException{
 
         AutorePost autoreDaEliminare=getAutore(id);
 
-        autori.remove(autoreDaEliminare);
+        autoreRepository.delete(autoreDaEliminare);
     }
 }
